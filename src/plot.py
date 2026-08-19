@@ -23,6 +23,10 @@ BASELINE_ROW_RE = re.compile(
 RIGOR_MEAN_RE = re.compile(
     r"^ML \(gradient boosting\) QLIKE across \d+ seeds: mean=([\d.]+) std=([\d.]+)"
 )
+RIGOR_EXCLUDING_RE = re.compile(
+    r"^excluding only (\d{8}), on the identical remaining \d+ days: "
+    r"ML mean QLIKE=([\d.]+), HAR-RV mean QLIKE=([\d.]+)"
+)
 
 
 def parse_baseline_qlike(path=BASELINE_LOG):
@@ -45,12 +49,25 @@ def parse_ml_qlike(path=RIGOR_LOG):
     raise AssertionError("no ML seed-sweep summary line found in rigor.log")
 
 
-def plot(baseline_qlike, ml_mean, ml_std, out_path=OUT_PATH):
-    labels = ["garch(1,1)", "har-rv", "naive\npersistence", "ml (gradient\nboosting)"]
+def parse_excluding_worst_day(path=RIGOR_LOG):
+    """Returns (date, ml_qlike, har_qlike) with the ML model's single worst day
+    dropped from both averages, as printed by the decomposition in rigor.py.
+    """
+    for line in path.read_text().splitlines():
+        m = RIGOR_EXCLUDING_RE.match(line)
+        if m:
+            return m.group(1), float(m.group(2)), float(m.group(3))
+    raise AssertionError("no worst-day exclusion line found in rigor.log")
+
+
+def plot(baseline_qlike, ml_mean, ml_std, worst_day, ml_excluding, out_path=OUT_PATH):
+    pretty_day = f"{worst_day[:4]}-{worst_day[4:6]}-{worst_day[6:]}"
+    labels = ["garch(1,1)", "har-rv", "naive\npersistence", "ml (gradient\nboosting)",
+              f"ml, excluding\n{pretty_day}"]
     values = [baseline_qlike["GARCH(1,1)"], baseline_qlike["HAR-RV"],
-              baseline_qlike["naive persistence"], ml_mean]
-    errors = [0, 0, 0, ml_std]
-    colors = ["#1f77b4", "#2ca02c", "#7f7f7f", "#d62728"]
+              baseline_qlike["naive persistence"], ml_mean, ml_excluding]
+    errors = [0, 0, 0, ml_std, 0]
+    colors = ["#1f77b4", "#2ca02c", "#7f7f7f", "#d62728", "#ff9896"]
 
     fig, ax = plt.subplots(figsize=(1600 / 150, 900 / 150), dpi=150)
     fig.patch.set_facecolor("white")
@@ -60,12 +77,19 @@ def plot(baseline_qlike, ml_mean, ml_std, out_path=OUT_PATH):
     ax.set_yscale("log")
     ax.set_ylabel("out-of-sample qlike (log scale, lower is better)", fontsize=13)
     ax.set_title(
-        "gradient boosting collapses toward naive persistence,\n"
-        "while garch and har-rv stay flat and close together",
+        "gradient boosting loses to har-rv, but 99% of the gap is one day:\n"
+        f"drop {pretty_day} and the two are level",
         fontsize=15,
     )
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=11)
     ax.grid(axis="y", linewidth=0.4, alpha=0.4)
+
+    ax.axhline(baseline_qlike["HAR-RV"], color="#2ca02c", linestyle="--", linewidth=1.2,
+               zorder=0)
+    ax.annotate(f"har-rv baseline, {baseline_qlike['HAR-RV']:.3f}",
+                xy=(1.5, baseline_qlike["HAR-RV"]), xytext=(0, 6),
+                textcoords="offset points", ha="center", va="bottom", fontsize=10,
+                color="#2ca02c")
 
     for bar, v in zip(bars, values):
         ax.annotate(f"{v:.3g}", xy=(bar.get_x() + bar.get_width() / 2, v),
@@ -79,4 +103,5 @@ def plot(baseline_qlike, ml_mean, ml_std, out_path=OUT_PATH):
 if __name__ == "__main__":
     baseline_qlike = parse_baseline_qlike()
     ml_mean, ml_std = parse_ml_qlike()
-    plot(baseline_qlike, ml_mean, ml_std)
+    worst_day, ml_excluding, _ = parse_excluding_worst_day()
+    plot(baseline_qlike, ml_mean, ml_std, worst_day, ml_excluding)
