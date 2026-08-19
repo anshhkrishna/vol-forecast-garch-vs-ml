@@ -4,15 +4,15 @@ test:  4147 rows, 20100104..20260630
 
 QLIKE prediction floor: 1.000000e-08 (smallest nonzero realized-variance proxy value in the training window, set by the data's return quantization)
 
-GARCH(1,1) fit: omega=9.985042e-07 alpha=0.092593 beta=0.899649 (alpha+beta=0.992242), converged=True
+GARCH(1,1) fit: omega=9.984797e-07 alpha=0.092594 beta=0.899649 (alpha+beta=0.992243), converged=True
 HAR-RV fit: intercept=3.137750e-05 daily=0.0286 weekly=0.3839 monthly=0.3140
-ML model: GradientBoostingRegressor trained on 22105 rows in 2.51s
+ML model: GradientBoostingRegressor trained on 22105 rows in 1.60s
 
-        GARCH(1,1)  QLIKE=1.522779  MSE=1.648851e-07 (31 zero-actual rows excluded from QLIKE)
+        GARCH(1,1)  QLIKE=1.522779  MSE=1.648852e-07 (31 zero-actual rows excluded from QLIKE)
             HAR-RV  QLIKE=1.516278  MSE=1.603824e-07 (31 zero-actual rows excluded from QLIKE)
  naive persistence  QLIKE=226.250424  MSE=2.446041e-07 (34 predictions clipped to the floor, 31 zero-actual rows excluded from QLIKE)
-ML (gradient boosting)  QLIKE=197.878836  MSE=1.817569e-07 (1 predictions clipped to the floor, 31 zero-actual rows excluded from QLIKE)
+ML (gradient boosting)  QLIKE=197.878788  MSE=1.817202e-07 (1 predictions clipped to the floor, 31 zero-actual rows excluded from QLIKE)
 
-ML model DOES NOT beat HAR-RV on QLIKE (197.878836 > 1.516278)
+ML model DOES NOT beat HAR-RV on QLIKE (197.878788 > 1.516278)
 
-wall clock: 3.77s
+wall clock: 2.21s
