@@ -1,5 +1,7 @@
 # vol-forecast-garch-vs-ml
 
+> garch(1,1), har-rv, and gradient boosting compared out of sample on daily realized variance, in numpy and scikit-learn
+
 Status: scaffolded, not yet built.
 
 ## Claim under test
