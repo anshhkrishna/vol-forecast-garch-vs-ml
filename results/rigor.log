@@ -1,0 +1,13 @@
+leakage check: 26252 valid rows, no feature reaches into its own or a later target
+
+HAR-RV QLIKE (fixed, no randomness): 1.516278
+
+  seed=0  QLIKE=197.878836
+  seed=1  QLIKE=197.878916
+  seed=2  QLIKE=197.878864
+  seed=3  QLIKE=197.878927
+  seed=4  QLIKE=197.878837
+
+ML (gradient boosting) QLIKE across 5 seeds: mean=197.878876 std=0.000039
+
+ML model DOES NOT beat HAR-RV on mean QLIKE (197.878876 > 1.516278)
