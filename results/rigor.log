@@ -2,12 +2,28 @@ leakage check: 26252 valid rows, no feature reaches into its own or a later targ
 
 HAR-RV QLIKE (fixed, no randomness): 1.516278
 
-  seed=0  QLIKE=197.878836
+  seed=0  QLIKE=197.878788
   seed=1  QLIKE=197.878916
   seed=2  QLIKE=197.878864
   seed=3  QLIKE=197.878927
   seed=4  QLIKE=197.878837
 
-ML (gradient boosting) QLIKE across 5 seeds: mean=197.878876 std=0.000039
+ML (gradient boosting) QLIKE across 5 seeds: mean=197.878866 std=0.000051
 
-ML model DOES NOT beat HAR-RV on mean QLIKE (197.878876 > 1.516278)
+ML model DOES NOT beat HAR-RV on mean QLIKE (197.878866 > 1.516278)
+
+per-day QLIKE decomposition over the 4116 scored days (seed 0, the configuration run.log was captured from)
+              GARCH(1,1)  worst day 20181010 contributes 37.6 of 6267.8 (0.60% of the sum), actual=1.102240e-03 predicted=2.601786e-05
+                          mean QLIKE over the other 4115 days: 1.514008
+                  HAR-RV  worst day 20181010 contributes 19.3 of 6241.0 (0.31% of the sum), actual=1.102240e-03 predicted=4.697891e-05
+                          mean QLIKE over the other 4115 days: 1.511954
+       naive persistence  worst day 20110818 contributes 215282.7 of 931246.7 (23.12% of the sum), actual=2.152960e-03 predicted=1.000000e-08
+                          mean QLIKE over the other 4115 days: 173.988828
+  ML (gradient boosting)  worst day 20200313 contributes 808186.4 of 814469.1 (99.23% of the sum), actual=8.082010e-03 predicted=1.000000e-08
+                          mean QLIKE over the other 4115 days: 1.526779
+
+excluding only 20200313, on the identical remaining 4115 days: ML mean QLIKE=1.526779, HAR-RV mean QLIKE=1.516339
+ML raw prediction on 20200313 before the non-negativity clip: -2.173623e-04 (negative raw predictions across the whole test window: 1)
+ML raw prediction range on the test window: [-2.173623e-04, 6.227674e-03]
+training realized-variance max=3.031081e-02, test max=1.440000e-02, test days above the training max: 0
+training days whose realized variance is at least 20200313's actual: 11
